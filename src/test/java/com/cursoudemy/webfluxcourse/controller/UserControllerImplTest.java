@@ -20,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.reactive.function.BodyInserters;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @ExtendWith(SpringExtension.class)
@@ -101,7 +102,24 @@ class UserControllerImplTest {
     }
 
     @Test
-    void findAll() {
+    @DisplayName("Test endpoint findByAll with success")
+    void testFindAllWithSuccess() {
+
+        final UserResponse response = new UserResponse(ID, NAME, EMAIL, PASSWORD);
+
+        Mockito.when(userService.findAll()).thenReturn(Flux.just(User.builder().build()));
+        Mockito.when(mapper.toResponse(ArgumentMatchers.any(User.class))).thenReturn(response);
+
+        webTestClient.get().uri("/users")
+                .accept(MediaType.APPLICATION_JSON)
+                .exchange()
+                .expectStatus().isOk()
+                .expectBody()
+                .jsonPath("$.[0].id").isEqualTo(ID)
+                .jsonPath("$.[0].name").isEqualTo("Valdir")
+                .jsonPath("$.[0].email").isEqualTo("valdir@email.com")
+                .jsonPath("$.[0].password").isEqualTo("123");
+
     }
 
     @Test
