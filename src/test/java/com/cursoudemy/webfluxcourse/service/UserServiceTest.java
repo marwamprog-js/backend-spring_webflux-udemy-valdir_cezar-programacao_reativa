@@ -6,12 +6,13 @@ import com.cursoudemy.webfluxcourse.model.request.UserRequest;
 import com.cursoudemy.webfluxcourse.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentMatchers;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
-
-import java.util.Objects;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {
@@ -36,11 +37,29 @@ class UserServiceTest {
         Mono<User> result = userService.save(request);
 
         StepVerifier.create(result)
-                .expectNextMatches(Objects::nonNull) //user -> user instanceof User || ser -> user != null
+                .expectNextMatches(user -> user.getClass() == User.class) //user -> user instanceof User || ser -> user != null || Objects::nonNull
                 .expectComplete()
                 .verify();
 
         Mockito.verify(userRepository, Mockito.times(1)).save(ArgumentMatchers.any(User.class)); // Verifica quantas vezes o metodo save foi chamado
 
+    }
+
+    @Test
+    void testFindById() {
+        Mockito.when(userRepository.findById(ArgumentMatchers.anyString())).thenReturn(Mono.just(
+                User.builder()
+                        .id("1234")
+                        .build()
+        ));
+
+        Mono<User> result = userService.findById("123");
+
+        StepVerifier.create(result)
+                .expectNextMatches(user -> user.getClass() == User.class) //user -> user instanceof User || ser -> user != null
+                .expectComplete()
+                .verify();
+
+        Mockito.verify(userRepository, Mockito.times(1)).findById(ArgumentMatchers.anyString());
     }
 }
