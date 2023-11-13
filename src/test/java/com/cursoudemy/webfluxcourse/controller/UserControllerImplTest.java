@@ -5,6 +5,7 @@ import com.cursoudemy.webfluxcourse.mapper.UserMapper;
 import com.cursoudemy.webfluxcourse.model.request.UserRequest;
 import com.cursoudemy.webfluxcourse.model.response.UserResponse;
 import com.cursoudemy.webfluxcourse.service.UserService;
+import com.cursoudemy.webfluxcourse.service.exception.ObjectNotFoundException;
 import com.mongodb.reactivestreams.client.MongoClient;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -156,6 +157,26 @@ class UserControllerImplTest {
     }
 
     @Test
-    void delete() {
+    @DisplayName("Test endpoint delete with success")
+    void testDeleteWithSuccess() {
+        Mockito.when(userService.delete(ArgumentMatchers.anyString())).thenReturn(Mono.just(User.builder().build()));
+
+        webTestClient.delete().uri("/users/" + ID)
+                .exchange()
+                .expectStatus().isOk();
+
+        Mockito.verify(userService).delete(ArgumentMatchers.anyString());
+    }
+
+    @Test
+    @DisplayName("Test endpoint delete with notFound")
+    void testDeleteWithNotFound() {
+        Mockito.when(userService.delete(ArgumentMatchers.anyString())).thenThrow(new ObjectNotFoundException("not found"));
+
+        webTestClient.delete().uri("/users/" + ID)
+                .exchange()
+                .expectStatus().isNotFound();
+
+        Mockito.verify(userService).delete(ArgumentMatchers.anyString());
     }
 }
