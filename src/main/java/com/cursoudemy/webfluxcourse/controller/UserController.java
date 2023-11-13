@@ -1,6 +1,7 @@
 package com.cursoudemy.webfluxcourse.controller;
 
-import com.cursoudemy.webfluxcourse.entity.User;
+import com.cursoudemy.webfluxcourse.model.request.UserRequest;
+import com.cursoudemy.webfluxcourse.model.response.UserResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
