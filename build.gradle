@@ -30,7 +30,7 @@ dependencies {
 	//LOMBOK
 	compileOnly 'org.projectlombok:lombok';
 	annotationProcessor 'org.projectlombok:lombok';
-	implementation 'org.projectlombok:lombok-mapstruct-bindig:0.2.0'
+	implementation 'org.projectlombok:lombok-mapstruct-binding:0.2.0'
 
 	//MapStruct
 	implementation 'org.mapstruct:mapstruct:1.5.3.Final'
