@@ -27,6 +27,10 @@ import reactor.core.publisher.Mono;
 @AutoConfigureWebTestClient
 class UserControllerImplTest {
 
+    public static final String ID = "123456";
+    public static final String NAME = "Valdir";
+    public static final String EMAIL = "valdir@email.com";
+    public static final String PASSWORD = "123";
     @Autowired
     private WebTestClient webTestClient;
 
@@ -43,7 +47,7 @@ class UserControllerImplTest {
     @Test
     @DisplayName("Test endpoint save with success")
     void testSaveWithSuccess() {
-        final UserRequest request = new UserRequest("Valdir", "valdir@email.com", "123");
+        final UserRequest request = new UserRequest(NAME, EMAIL, PASSWORD);
 
         Mockito.when(userService.save(ArgumentMatchers.any(UserRequest.class))).thenReturn(Mono.just(User.builder().build()));
 
@@ -59,7 +63,7 @@ class UserControllerImplTest {
     @Test
     @DisplayName("Test endpoint save with bad request")
     void testSaveWithBadRequest() {
-        final UserRequest request = new UserRequest(" Valdir", "valdir@email.com", "123");
+        final UserRequest request = new UserRequest(NAME.concat(" "), EMAIL, PASSWORD);
 
         webTestClient.post().uri("/users")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -80,18 +84,17 @@ class UserControllerImplTest {
     @DisplayName("Test endpoint findById with success")
     void testfindByIdWithSuccess() {
 
-        final var id = "123456";
-        final UserResponse response = new UserResponse(id,"Valdir", "valdir@email.com", "123");
+        final UserResponse response = new UserResponse(ID, NAME, EMAIL, PASSWORD);
 
         Mockito.when(userService.findById(ArgumentMatchers.anyString())).thenReturn(Mono.just(User.builder().build()));
         Mockito.when(mapper.toResponse(ArgumentMatchers.any(User.class))).thenReturn(response);
 
-        webTestClient.get().uri("/users/" + id)
+        webTestClient.get().uri("/users/" + ID)
                 .accept(MediaType.APPLICATION_JSON)
                 .exchange()
                 .expectStatus().isOk()
                 .expectBody()
-                .jsonPath("$.id").isEqualTo(id)
+                .jsonPath("$.id").isEqualTo(ID)
                 .jsonPath("$.name").isEqualTo("Valdir")
                 .jsonPath("$.email").isEqualTo("valdir@email.com")
                 .jsonPath("$.password").isEqualTo("123");
